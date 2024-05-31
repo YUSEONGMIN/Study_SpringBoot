@@ -17,6 +17,7 @@ class Parent {
 
 class Child extends Parent {
 
+    @Override
     void method() {
 
     }

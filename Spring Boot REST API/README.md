@@ -10,6 +10,12 @@
 - [Section 4 - Spring](#section-4---spring)
 - [Section 5 - 프로젝트 생성](#section-5---프로젝트-생성)
   - [Section 5: 프로젝트구조](#프로젝트-구조)
+  - [스프링 주요 개념 (Core)](#스프링-주요-개념-core)
+  - [Spring MVC](#spring-mvc)
+  - [프로젝트 구동하기](#프로젝트-구동하기)
+  - [Controller, Service, Repository 클래스 생성](#controller-service-repository-클래스-생성)
+  - [자바 어노테이션](#자바-어노테이션)
+- [Section 6 - 스프링 코어](#section-6---스프링-코어)
 
 # [Section 1 - 시작](#목차)
 
@@ -48,7 +54,14 @@ Spring Boot: Spring 기반으로 설정을 쉽게 해줌
 # [Section 5 - 프로젝트 생성](#목차)
 
 - [프로젝트 구조](#프로젝트-구조)
-- [프로젝트 구조](#프로젝트-구조)
+- [스프링 주요 개념 (Core)](#스프링-주요-개념-core)
+- [Spring MVC](#spring-mvc)
+- [프로젝트 구동하기](#프로젝트-구동하기)
+- [Controller, Service, Repository 클래스 생성](#controller-service-repository-클래스-생성)
+- [자바 어노테이션](#자바-어노테이션)
+- [상품 등록, 조회 API 프로젝트](#상품-등록-조회-api-프로젝트)
+- [HTTP method](#http-method)
+- [서비스 추가해보기](#서비스-추가해보기)
 
 ## [spring initializr](https://start.spring.io/)
 
@@ -73,7 +86,7 @@ REST API를 만들기 위해서는 가장 기본적인 것
 > Spring Web
 
 Build web: 웹을 만들거나
-including RESTful: RESTful하게 만들거나
+including RESTful: RESTful하게 만들거나  
 Uses Apache Tomcat as the default embedded container
 
 > Tomcat: WAS(Web Application Service) 브랜드
@@ -301,3 +314,108 @@ class Child extends Parent {
 새로운 메소드 metod를 생성한 것  
 이런 실수를 했다면 `@Override`를 통해 에러를 찾을 수 있음  
 어노테이션의 역할은 다양함 (코드생성, 오류찾기 등)
+
+## [상품 등록, 조회 API 프로젝트](#section-5---프로젝트-생성)
+
+Recall
+
+> 프로젝트: 특정 요구사항을 수행할 수 있는 프로그램 결과
+
+상품 등록과 조회만 할 수 있는 API 만들기 (백엔드)
+
+패키지 구조 설계 생각하기
+
+상품 등록과 조회 -> 상품에 초점
+
+> 설계 기법 중 DDD(Domain Driven Development)
+> 설계뿐만 아니라 모든 개발 프로세스에 도메인 단위로 하기
+> 도메인: 문제 해결 단위, (ㅇㅇ) 서비스 <- ㅇㅇ이 도메인
+
+![alt text](img/image-7.png)
+
+product 패키지 만들기  
+클래스 파일명 바꾸기
+
+ProductController.java
+
+@Controller를 넣어줘야 컨트롤러 역할을 수행
+
+`Controller.class`
+
+> It is typically used in combination with annotated handler methods based on the  
+> {@link org.springframework.web.bind.annotation.RequestMapping} annotation.
+
+어떤 결합으로 함께 이용됩니다.
+핸들러 역할을 하는 메소드
+RequestMapping 어노테이션과 같이 사용
+
+핸들러: 요청이 날라오면 그 요청에 맞는 메소드를 호출
+
+컨트롤러는 요청이 날라오면 메소드를 실행
+
+`@RequestMapping`
+() 내용에 맞는 요청이 들어오면 아래 메소드를 실행
+
+Recall
+
+> Http 틀에는
+>
+> 1. URL: http://localhost:8080
+> 2. 목적: 조회, 등록, 수정 (method=RequestMethod.GET)
+> 3. 데이터: body
+
+```java
+@RequestMapping(value = "http://localhost:8080", method = RequestMethod.GET)
+    public String findProduct() {
+        return "NoteBook";
+    }
+```
+
+`@RequestMapping` 어노테이션 안 속성에는  
+이런 url이 날라오고, 목적이 요청이면 아래 메소드 실행  
+url에 http://localhost:8080는 기본값으로 생략해도 무방
+
+findProduct 메소드를 실행하는데 반환하는건  
+화면이 아닌 **데이터**
+
+데이터를 던지는 것은 그냥 API가 아닌 REST API  
+데이터를 어디서 담아서 옮길지 (body)
+
+클라이언트한테 요청을 받으면 "Notebook"이라는 데이터 전달  
+즉, REST API
+데이터를 전달하려면 ResponseBody라는 틀에 담아서 전달
+
+그냥 @Controller만 있으면 View를 전달해주는 API  
+@ResponseBody 어노테이션이 있어야 REST API 역할
+
+## [HTTP method](#section-5---프로젝트-생성)
+
+HTTP 목적
+
+1. 조회: GET
+2. 등록(생성): POST
+3. 수정: 전체 수정 - PUT
+   - 부분 수정 - PATCH
+4. 삭제: DELETE
+
+## [서비스 추가해보기](#section-5---프로젝트-생성)
+
+```java
+@RequestMapping(value = "", method = RequestMethod.GET)
+    public String findProduct() {
+        ProductService productService = new ProductService();
+
+        return "NoteBook";
+    }
+```
+
+컨트롤러는 서비스에게 일을 시키고 서비스에게 받은 값을 전달하는 역할
+서비스에게 일을 시키기 위해서는 객체가 있어야 함
+`ProductService productService = new ProductService();`
+ProductService는 findProduct에 대응할 만한 로직(메소드)이 아직 없음
+
+서비스에는 RequestMapping이 없음 <- 컨트롤러꺼
+
+# [Section 6 - 스프링 코어](#목차)
+
+## [스프링 IoC & 빈 등록 & DI 적용]()
