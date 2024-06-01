@@ -15,7 +15,21 @@
   - [프로젝트 구동하기](#프로젝트-구동하기)
   - [Controller, Service, Repository 클래스 생성](#controller-service-repository-클래스-생성)
   - [자바 어노테이션](#자바-어노테이션)
+  - [상품 등록, 조회 API 프로젝트](#상품-등록-조회-api-프로젝트)
+  - [HTTP method](#http-method)
+  - [서비스 추가해보기](#서비스-추가해보기)
 - [Section 6 - 스프링 코어](#section-6---스프링-코어)
+  - [스프링 IoC & 빈 등록 & DI 적용](#스프링-ioc--빈-등록--di-적용)
+  - [Repository는 Map으로](#repository는-map으로)
+  - [DI 3가지 방법](#di-3가지-방법)
+- [Section 7 - 상품-등록하기](#section-7---상품-등록하기)
+  - [REST API URL 규칙](#rest-api-url-규칙)
+- [Section 8 - 테스트](#section-8---테스트)
+- [Section 9 - 원하는 상품 등록하기](#section-9---원하는-상품-등록하기)
+  - [@RequestParam](#requestparam)
+  - [@PathVariable](#pathvariable)
+- [Section 10 - 상품에 데이터 더 넣어보기](#section-10---상품에-데이터-더-넣어보기)
+  - [@RequestBody](#requestbody)
 
 # [Section 1 - 시작](#목차)
 
@@ -419,6 +433,8 @@ ProductService는 findProduct에 대응할 만한 로직(메소드)이 아직 �
 # [Section 6 - 스프링 코어](#목차)
 
 - [스프링 IoC & 빈 등록 & DI 적용](#스프링-ioc--빈-등록--di-적용)
+- [Repository는 Map으로](#repository는-map으로)
+- [DI 3가지 방법](#di-3가지-방법)
 
 ## [스프링 IoC & 빈 등록 & DI 적용](#section-6---스프링-코어)
 
@@ -468,3 +484,193 @@ public class ProductService {
 
 데이터는 레파지토리에서 꺼내옴
 레파지토리도 빈으로 등록 @Repository
+
+이번에는 DB 대신 Map 사용
+
+| Id  | Name   | Age  |
+| --- | ------ | ---- |
+| 1   | 민지   | 18세 |
+| 2   | 하니   | 18세 |
+| 3   | 다니엘 | 17세 |
+| 4   | 해린   | 16세 |
+| 5   | 혜인   | 14세 |
+
+Map은 자바의 자료구조  
+테이블 형태
+Map은 key 값을 가지고 value를 찾을 수 있는 자료구조
+
+@Repository에도 @Component가 존재 (스프링 빈으로 등록)
+
+## [DI 3가지 방법](#section-6---스프링-코어)
+
+1. 필드로 주입
+
+```java
+   @Autowired
+   필드
+```
+
+필드의 값을 바꿀 수 있는 메소드는 없어서 불변성은 지켜지겠지만  
+테스트할 때도 그래서 불편 (test1 -> test2로 하고 싶어도 못함)
+
+2. Setter로 주입
+
+```java
+  @Autowired
+  public setter 메소드
+```
+
+setter는 보통 public으로 열려있어서 누구나 접근 가능
+의존성 주입을 받아도 나중에 바꿀 수 있어 잘 안쓰임
+
+3. 생성자로 주입
+
+```java
+  @Autowired
+  생성자
+```
+
+생성자 위에 @Autowired  
+생성자는 테스트할 때 생성자에 담아 원하는 타입, 구현체를 유도할 수 있음
+
+# [Section 7 - 상품 등록하기](#목차)
+
+- [REST API URL 규칙](#rest-api-url-규칙)
+
+```java
+    public String findProduct() {
+        return db.get(1);
+    }
+
+    public void save() {
+        db.put(id++, "Notebook");
+    }
+```
+
+Repository에서 저장과 조회 수정
+
+```java
+    public void saveProduct() {
+        productRepository.save();
+    }
+```
+
+서비스에서 비즈니스 로직 구현
+
+```java
+    // 상품 등록
+    @RequestMapping(value = "", method = RequestMethod.POST)
+    public void saveProduct() {
+        productService.saveProduct();
+    }
+```
+
+컨트롤러에 이 조합으로 요청이 오면 아래 메소드를 호출  
+saveProduct를 호출하면 서비스에 있는 메소드를 호출
+
+## [REST API URL 규칙](#section-7---상품-등록하기)
+
+```java
+    @RequestMapping(value = "", method = RequestMethod.GET)
+    @RequestMapping(value = "", method = RequestMethod.POST)
+```
+
+url이 같아도 목적이 다르면 구분
+
+- 상품 조회 (method = GET)
+  localhost:8080/product_select? get_product? X
+  localhost:8080/products
+
+- 상품 등록 (method = POST)
+  localhost:8080/product_create? save_product? X
+  localhost:8080/products
+
+상품 조회에서 http 메소드 역할은 "조회" = GET, 등록은 POST  
+url과 메소드 조합으로 찾는데, 메소드는 구분이 되므로 상품에 초점
+보통은 복수형으로 많이 쓰임 (상품 전체 조회, 상품 단위 조회 등)
+
+# [Section 8 - 테스트](#목차)
+
+log를 찍어보는 것이 좋다. sout은 사용자에게 화면을 보여줄 때 사용  
+시스템 내부적으로 데이터를 확인할 때는 log
+
+## Postman
+
+![alt text](img/image-8.png)
+
+Status: 200 OK
+
+http가 들고있는 값 중에 url, 메소드, body 외에 status code가 있음
+
+![alt text](img/image-9.png)
+
+# [Section 9 - 원하는 상품 등록하기](#목차)
+
+- [@RequestParam](#requestparam)
+- [@PathVariable](#pathvariable)
+
+요청을 받을 때 데이터도 같이 받는 방법
+
+1. HttpServletRequest
+2. @RequestParam
+   `http://localhost:8080/products?name=__`
+3. @RequestBody
+   `http://localhost:8080/products`
+4. @ModelAtrribute
+5. @PathVariable
+   `http://localhost:8080/products/{id}`
+
+## [@RequestParam](#section-9---원하는-상품-등록하기)
+
+? 뒤 들어가는 변수는 개인정보는 피할 것
+
+```java
+    @RequestMapping(value = "/products", method = RequestMethod.POST)
+    public void saveProduct(@RequestParam(value = "name") String productName) {
+        System.out.println("POST");
+        productService.saveProduct(productName);
+    }
+```
+
+productName을 받아서 서비스에게 전달  
+RequestParam 방식을 사용하면 알아서 String으로 전달
+
+## [@PathVariable](#section-9---원하는-상품-등록하기)
+
+정해진 건 없지만  
+RequestParam: 입력을 받는 값, ? 가 있는 쿼리 스트링  
+PathVariable: 정해진 값을 조회, /{id}
+
+```java
+    @RequestMapping(value = "/products/{id}", method = RequestMethod.GET)
+    public String findProduct(@PathVariable("id") String id) {
+        System.out.println(id);
+        return productService.findProduct();
+    }
+```
+
+String id 말고 int id도 주소에 잘 입력됨
+
+```java
+    private int id = 1;
+
+    public String findProduct(int idx) {
+        return db.get(idx);
+    }
+```
+
+지역변수랑 필드 값과 구분되겠지만 매개변수를 idx로 변경  
+get 메소드는 없는 idx를 입력해도 None 값을 반환  
+-> 예외처리 해서 없는 id라는 것을 사용자에게 알림
+
+# [Section 10 - 상품에 데이터 더 넣어보기](#목차)
+
+- [@RequestBody](#requestbody)
+
+## [@RequestBody](#section-10---상품에-데이터-더-넣어보기)
+
+지금까지는 상품명만 입력하고 조회하는 것을 알아봄
+상품명 뿐만 아닌 가격 등까지 입력하는 방법
+하나의 세트로 입력하기
+
+객체 지향 프로그램에서 세트로 다닐 수 있는 방법 = 객체
