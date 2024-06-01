@@ -30,6 +30,7 @@
   - [@PathVariable](#pathvariable)
 - [Section 10 - 상품에 데이터 더 넣어보기](#section-10---상품에-데이터-더-넣어보기)
   - [@RequestBody](#requestbody)
+- [Section 11 - 마무리](#section-11---마무리)
 
 # [Section 1 - 시작](#목차)
 
@@ -757,3 +758,20 @@ name과 price를 불러오는 방법
 
 db 반환값을 String에서 Product 객체로 수정
 -> 서비스 반환값 수정 -> 컨트롤러 반환값 수정
+
+# [Section 11 - 마무리](#목차)
+
+다음 목표
+
+- 상품 수정, 삭제
+- @Configuration + @Bean
+- Entity vs DTO
+- DB 연결 (JPA)
+- AOP
+
+스프링 빈 등록할 때 @Component 방법만 써봤는데 @Configuration + @Bean도 써보기
+
+Product 객체를 가지고 컨트롤러부터 레파지토리까지 가게 했는데 DTO는 무엇일까?
+
+- Product = Entity 객체 이름
+  계층을 움직일 때 Entity가 아닌 DTO로 움직인다.
