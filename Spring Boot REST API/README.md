@@ -674,3 +674,86 @@ get 메소드는 없는 idx를 입력해도 None 값을 반환
 하나의 세트로 입력하기
 
 객체 지향 프로그램에서 세트로 다닐 수 있는 방법 = 객체
+
+RequestBody는 http 틀에 들어가는 url, 목적, body 중 body에 들어감
+
+`Product.java`
+
+Product 객체에는 이름, 가격, 설명이 들어감
+
+```java
+// ProductController
+    @RequestMapping(value = "/products", method = RequestMethod.POST)
+        public void saveProduct(@RequestBody Product product) {
+        System.out.println("POST");
+        productService.saveProduct(product);
+    }
+// ProductRepository
+    public void save(Product product) {
+        System.out.println(product.getName());
+    }
+// Product: `Ctrl+.` -> Generate Getters and Setter
+    public String getName() {
+        return name;
+    }
+```
+
+## JSON
+
+Java Script Object Notation  
+자바 스크립트 객체 형태
+
+자바에서는 객체를 다음과 같이 객체 생성
+
+```java
+Product product = new Product();
+```
+
+자바 스크립트는 다음과 같이 객체 생성
+
+```js
+var product = {
+  name: "handcream",
+  price: 15000,
+};
+```
+
+자바 스크립트는 key-value로 형성  
+name과 price를 불러오는 방법  
+`product.name`, `product.price`
+
+자바 스크립트 -> 화면단에서 JSON 형태  
+자바 -> 백엔드에서 객체 형태
+형태가 같아서 중간에서 Mapping이 가능
+그래서 화면에서 객체로 보낼 수 있는 것
+
+@RequestBody 어노테이션이  
+중간에서 자바스크립트에서 건너온 객체를
+이름만 맞다면 하나씩 맞춰서 알아서 담아줌
+
+-> `HTTP 메시지 컨버터` 검색
+
+메시지 컨버터 덕분에 자바스크립트 객체가 와도 자바 객체로 변환할 수 있다.
+
+![alt text](img/image-10.png)
+
+## Repository 고도화하기
+
+```java
+// ProductRepository
+    private Map<Integer, Product> db = new HashMap<>();
+
+    private int id = 1;
+
+    public Product findProduct(int idx) {
+        return db.get(idx);
+    }
+
+    public void save(Product product) {
+        db.put(id++, product);
+        System.out.println(product.getName());
+    }
+```
+
+db 반환값을 String에서 Product 객체로 수정
+-> 서비스 반환값 수정 -> 컨트롤러 반환값 수정

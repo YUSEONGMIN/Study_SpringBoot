@@ -15,13 +15,16 @@ public class ProductService {
     }
 // 생성자 주입 방법을 써도 필드가 필요하지 않은 것은 아님
 
-    public String findProduct(int id) {
+    // public String findProduct(int id) {
+    public Product findProduct(int id) {
         // return "<h1>NoteBook!!</h1>";
         return productRepository.findProduct(id);
     }
 
-    public void saveProduct(String productName) {
+    // public void saveProduct(String productName) {
+    public void saveProduct(Product product) {
         // productRepository.save();
-        productRepository.save(productName);
+        // productRepository.save(productName);
+        productRepository.save(product);
     }
 }
