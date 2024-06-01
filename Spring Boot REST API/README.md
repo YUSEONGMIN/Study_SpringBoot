@@ -418,4 +418,53 @@ ProductService는 findProduct에 대응할 만한 로직(메소드)이 아직 �
 
 # [Section 6 - 스프링 코어](#목차)
 
-## [스프링 IoC & 빈 등록 & DI 적용]()
+- [스프링 IoC & 빈 등록 & DI 적용](#스프링-ioc--빈-등록--di-적용)
+
+## [스프링 IoC & 빈 등록 & DI 적용](#section-6---스프링-코어)
+
+IoC: 제어권을 스프링한테 넘김  
+아직까지는 우리가 직접 객체를 생성함  
+`ProductService productService = new ProductService();`  
+객체에 대한 제어권을 우리가 들고있음
+
+우리가 직접 객체를 생성하는 대신
+스프링이 객체를 생성 등 관리하라고 요청
+
+-> 내가 객체 만드는 틀(클래스) 제공해줄테니까
+클래스보고 객체 생성 알아서 해주고
+내가 필요할 때마다 알아서 넣어줘
+
+스프링은 객체(빈)을 생성해서 컨테이너에 담아놓고
+우리가 필요할 때마다 꺼내서 사용
+= 스프링 빈(스프링이 관리하는 객체)으로 등록해줘
+-> @Compoennt, @Configuration + @Bean
+
+등록된 빈을 사용하게 주입해줘(의존성 주입) -> @Autowried
+
+IoC를 위해서 스프링 빈(컨테이너에 있는 자바 객체)으로 등록
+그것을 꺼내서 의존성 주입까지
+
+@Component를 달면 객체 생성을 직접 하지 않고도 주입을 받아서 사용 가능
+@Controller에도 @Component가 있음  
+컨트롤러도 스프링 빈으로 등록
+
+@SpringBootApplication에는 Component를 찾아주는 기능이 있음
+
+## [Repository는 Map으로](#section-6---스프링-코어)
+
+```java
+@Service
+public class ProductService {
+
+    public String findProduct() {
+        return "NoteBook!!";
+    }
+}
+```
+
+"NoteBook!!"은 데이터
+서비스는 연산 로직을 하는 역할
+데이터베이스에서 직접 데이터를 꺼내오진 않음
+
+데이터는 레파지토리에서 꺼내옴
+레파지토리도 빈으로 등록 @Repository
