@@ -1,6 +1,8 @@
 package com.example.demo.product;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Repository;
@@ -29,5 +31,11 @@ public class ProductRepository {
         // db.put(id++, productName);
         db.put(id++, product);
         System.out.println(product.getName());
+    }
+
+    public List<Product> findProducts() {
+        return new ArrayList<>(db.values());
+        // List 생성자를 이용. db는 Map 형태로 key(id), value(Product)로 되어 있음
+        // Product 객체들이 모여 리스트가 됨
     }
 }

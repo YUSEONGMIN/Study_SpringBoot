@@ -6,6 +6,8 @@
 
 - [Section 1 - 시작](#section-1---시작)
 - [Section 2 - 웹 백엔드 개발자](#section-2---웹-백엔드-개발자)
+- [Section 3 - 상품 API](#section-3---상품-api)
+  - [REST API URL 설계 고도화](#rest-api-url-설계-고도화)
 
 # [Section 1 - 시작](#목차)
 
@@ -131,3 +133,97 @@ cf. 도메인 기반(주도) 설계(구현): DDD
 도메인은 크기 별로 상위 도메인, 하위 도메인 등 다양한 기준과 영역이 있다.
 
 # [Section 3 - 상품 API](#목차)
+
+- [REST API URL 설계 고도화](#rest-api-url-설계-고도화)
+
+상품 API에서 소비자는 전체(개별) 상품 조회만 사용  
+전체 상품 조회, 수정, 삭제는 관리자의 것
+
+> 소비자 입장이 자연스럽다보니  
+> 소비자 역할에 대한 API를 만든 후에  
+> 관리자 API를 만드는 게 더 빠를수도?
+
+## [REST API URL 설계 고도화](#section-3---상품-api)
+
+전체 상품 조회 추가
+
+```java
+// 개별 상품 조회
+    @RequestMapping(value = "/products/{id}", method = RequestMethod.GET)
+    public Product findProduct(@PathVariable("id") int id) {
+        System.out.println(id);
+        return productService.findProduct(id);
+    }
+```
+
+[소비자 역할]
+
+- 전체 상품 조회 (method = GET)  
+  `localhost:8080/products`
+
+- 개별 상품 조회 (method = GET)  
+  `localhost:8080/products/{id}`
+
+[관리자 역할]
+
+- 상품 등록 (method = POST)  
+  `localhost:8080/products`
+
+### 내 컴퓨터는 서버가 될 수 있을까?
+
+클라이언트 vs 서버
+
+클라이언트(고객): 음식을 주문(요청)하는 사람  
+서버(제공자): 음식을 가져오는 사람
+
+-> 클라이언트: 정보를 요청하는 역할의 컴퓨터
+-> 서버: 원하는 연산/정보를 제공하는 역할의 컴퓨터
+
+서버가 될 수 있으나 계속 전원을 켜야 함
+
+### 줄임말
+
+1. @Controller + @ResponseBody: REST API
+
+REST API란? HTTP 약속을 지킨 API  
+인터넷에서 HTTP 틀을 지켜야 웹을 갈 수 있음
+
+-> @RestController
+
+2. @RequestMapping(value="", method="")
+
+-> @GetMapping, @PostMapping, @DeleteMapping
+
+# [Section 4 - 전체 상품 조회하기](#목차)
+
+![alt text](img/image-11.png)
+
+프론트엔드에서는 여러 개의 데이터를 받을 땐 리스트 형태로 받는게 사용하기 편하다.
+
+```java
+    // 전체 상품 조회
+    @GetMapping("/products")
+    public List<Product> findProductList() {
+        return productService.findProductList();
+    }
+```
+
+### 클린 코드: 메소드명
+
+전체 상품 조회: `public List<Product> findProductList()`
+
+1. 명사 vs **동사** -> 동작, 기능, 행위
+   자바에서 메소드는 동작을 나타냄
+
+2. find ProductList
+   1. List: 반환 타입으로 표현 가능
+   2. 의미만 제대로 담고 있으면 된다. (굳이 구조를...)
+
+-> `public List<Product> findProducts()`
+
+객체는 JSON 형태로 넘어간다. 객체들은 리스트로 (JSON array)
+
+# [Section 5 - 스프링 빈을 등록하는 방법](#목차)
+
+스프링이 특정 클래스로 일을 시키려면...
+-> 스프링 빈으로 등록이 되어야만 스프링은 그 코드로 일을 한다.
