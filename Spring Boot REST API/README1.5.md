@@ -8,6 +8,10 @@
 - [Section 2 - 웹 백엔드 개발자](#section-2---웹-백엔드-개발자)
 - [Section 3 - 상품 API](#section-3---상품-api)
   - [REST API URL 설계 고도화](#rest-api-url-설계-고도화)
+- [Section 4 - 전체 상품 조회하기](#section-4---전체-상품-조회하기)
+- [Section 5 - 스프링 빈을 등록하는 방법](#section-5---스프링-빈을-등록하는-방법)
+  - [@Configuration](#configuration)
+  - [@Repository vs @Configuration + @Bean](#repository-vs-configuration--bean)
 
 # [Section 1 - 시작](#목차)
 
@@ -225,5 +229,85 @@ REST API란? HTTP 약속을 지킨 API
 
 # [Section 5 - 스프링 빈을 등록하는 방법](#목차)
 
+- [@Configuration](#configuration)
+- [@Repository vs @Configuration + @Bean](#repository-vs-configuration--bean)
+
 스프링이 특정 클래스로 일을 시키려면...
 -> 스프링 빈으로 등록이 되어야만 스프링은 그 코드로 일을 한다.
+
+스프링 빈 등록 방법 2가지
+
+1. @Component
+   ex) @Controller, @Service, @Repository
+
+2. @Configuration + @Bean
+
+## [@Configuration](#section-5---스프링-빈을-등록하는-방법)
+
+원래는 설정 파일(.xml)인데, 자바로 쓴 것
+
+### .xml 파일이란?
+
+Extensible Markup Language
+-> 데이터의 의미, 전송을 위해 <태그> </태그> 사이에 있는 글자가  
+어떤 구성을 나타내는지 표현하기 위해 사용하는 언어
+
+> html: 마크업 언어  
+> -> 사용자의 화면에서 <태그> </태그> 사이에 있는 글자가 어떤 구성을  
+> 나타내는지 표현하기 위해 사용하는 언어
+
+html은 화면단에서(프론트엔드)에서, xml은 백엔드단에서 사용하는 마크업 언어
+
+- 네트워크로 데이터를 전송할 때, 서로 다른 시스템끼리 데이터를 잘 알아보게 하기 위해
+- 특정 시스템 안에서 데이터의 의미를 나타내는 설정 파일
+
+---
+
+@Configuration 위치는 클래스 상단  
+의미는 설정 파일(.xml)인데 자바로 작성
+
+[xml 버전]
+스프링(부트) 프로젝트 안에서 데이터의 의미를 나타낼 것이 있다면..  
+스프링에게 이 클래스는 너가 스프링 빈으로 등록해야 해!  
+`<bean> Product 클래스 </bean>`  
+ps. 많이 사용하지만 레거시(옛날 방식)하다.
+
+[자바 버전]
+스프링에게 이 클래스는 너가 스프링 빈으로 등록해야 해!  
+`@Bean`
+
+```java
+@Configuration
+public class ApplicationConfiguration {
+
+    @Bean // 스프링에게 아래 메소드가 반환하는 "객체"를 스프링 빈으로 등록해줘 전달
+    public ProductRepository productRepository(){
+        return new ProductRepository();
+    }
+}
+```
+
+ProductRepository의 @Repository 제거
+
+@Configuration에도 @Component가 존재  
+@Component: @Controller, @Service, @Repository, @Configuration
+
+## [@Repository vs @Configuration + @Bean](#section-5---스프링-빈을-등록하는-방법)
+
+@Repository에는 @Component 이외에도 다른 기능들이 있다.
+
+```
+ * <p>A class thus annotated is eligible for Spring
+ * {@link org.springframework.dao.DataAccessException DataAccessException} translation
+ * when used in conjunction with a {@link
+ * org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor
+ * PersistenceExceptionTranslationPostProcessor}. The annotated class is also clarified as
+ * to its role in the overall application architecture for the purpose of tooling,
+ * aspects, etc.
+```
+
+`DataAccessException`, `PersistenceExceptionTranslationPostProcessor`  
+-> DB랑 연결할 때 기본적으로 필요할 것 같은 예외 처리
+ex) DB 명령어(SQL 문법, 제약 조건) 틀렸을 때
+
+@Controller, @Service 등도 @Component 이외의 기능들 존재
