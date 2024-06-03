@@ -9,6 +9,8 @@
 - [Section 3 - 도커란?](#section-3---도커란)
 - [Section 4 - ERD](#section-4---erd)
 - [Section 5 - JPA](#section-5---jpa)
+- [Section 6 - Spring Data JPA](#section-6---spring-data-jpa)
+  - [DB 연결하기](#db-연결하기)
 
 # [Section 1 - 시작](#목차)
 
@@ -72,3 +74,101 @@ ex. 상품명, 상품 가격, 상품 설명 / 회원 이름, 회원 아이디, �
 분리를 한다고 무조건 좋은 것은 아니다.
 
 # [Section 5 - JPA](#목차)
+
+JPA와 DB가 연결되는 방법
+
+![alt text](img/image-18.png)
+
+![alt text](img/image-19.png)
+
+Java DataBase Connectivity
+
+![alt text](img/image-20.png)
+
+자바는 객체 지향  
+음식은 객체로 존재할 수 있다.  
+(int 음식번호 -> Food 음식)
+
+객체 지향과 관계 데이터베이스의 패러다임 불일치  
+이를 해결해주는 것이 JPA
+
+### JPA란?
+
+Java Persistence API  
+자바 지속성/영속성 API
+자바(의 객체)가 JVM 밖에서도 지속되길 원함  
+-> 데이터베이스에 저장해둘 수 있을까
+
+자바 객체를 어떻게 DB에 저장?  
+-> 자바 객체를 JPA가 DB에 저장할 수 있도록 변환  
+= 자바 객체를 RDBMS에 저장할 수 있도록 맵핑
+(Object - Relational Mapping: ORM)
+
+JPA는 스프링이 아닌 JAVA 기술  
+JPA != Spring Data JPA
+
+# [Section 6 - Spring Data JPA](#목차)
+
+- [DB 연결하기](#)
+
+![alt text](img/image-21.png)
+
+Spring은 자바로 웹을 만들 수 있는 프레임워크
+
+웹: 정보 공유 -> 데이터 중요
+
+DB와 연결되는 JDBC를 사용할 수 있게 하는 JPA  
+그 JPA를 쉽게 사용할 수 있게 하는 것  
+-> Spring Data JPA
+
+## [DB 연결하기](#section-6---spring-data-jpa)
+
+1. DB에 Product를 저장할 공간, 테이블 준비하기
+2. 진짜 DB랑 연결하기
+3. Product 저장, 조회
+
+main - resources - `application.properties`
+
+### application.properties
+
+DB 연결, 포트 넘버 변경, 프로젝트 이름 변경, 로그 파일 저장 경로 등  
+-> 프로젝트 속성 값들을 설정 (로직과 관계가 없는)
+
+자바 코드가 아니므로 빈 등록은 안해도 됨
+
+스프링 - Spring Data JPA - JPA - JDBC API - MySQL
+
+JDBC가 DB와 연결이 되면  
+-> JPA가 거기에 ORM을 얹어주고  
+-> Spring Data JPA는 거기에 사용하기 편하게 만들어줌
+
+[spring.io - application.properties](https://docs.spring.io/spring-boot/appendix/application-properties/index.html)
+
+![alt text](img/image-22.png)
+
+```
+<프로젝트 속성>
+1) DB 연결 (JDBC를 사용하려면 'Datasource 객체' 속성 사용)
+- 굉장히 많은 DB에 연결될 때 사용하는 것들
+
+그 중 필요한 것들
+spring.datasource.driver-class-name
+-> driver: DB별 각각의 시스템을 잘 사용할 수 있도록 해주는 도구 (장치 구동기)
+
+spring.datasource.password
+-> DB 비밀번호 작성
+spring.datasource.username
+-> DB 사용자 이름 작성
+
+spring.datasource.url
+-> DB 주소 값
+
+- spring.datasource.driver-class-name=마리아 db
+- spring.datasource.url = 내컴퓨터에 있는 db 주소
+- spring.datasource.username = 유저네임
+- spring.datasource.password = 비밀번호
+
+2) 포트 넘버 바꾸기
+3) 프로젝트 이름 바꾸기
+4) 로그 파일 경로
+```
