@@ -175,3 +175,17 @@ spring.datasource.url
 3) 프로젝트 이름 바꾸기
 4) 로그 파일 경로
 ```
+
+![alt text](img/image-23.png)
+
+mariaDB와 연결? X  
+mariaDB 안에 shoppingmall과 연결 O
+
+application.properties에서  
+url, username, password 등 틀린 정보를 입력해도 에러가 발생하지 않는다.
+-> JDBC API
+
+# [Section 7 - JDBC API](#목차)
+
+자바 프로젝트와 DB를 어떻게 연결하는가?
+
