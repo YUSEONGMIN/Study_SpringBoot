@@ -5,8 +5,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.sql.DataSource;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.datasource.DataSourceUtils;
+
 // @Repository
 public class ProductRepository {
+
+    // @Autowired
+    // DataSource dataSource;
     
     // Id(Int), Name(Str)
     // 1        NoteBook
@@ -15,6 +23,12 @@ public class ProductRepository {
     private Map<Integer, Product> db = new HashMap<>();
     
     private int id = 1;
+
+
+    // // dataSource로 터널 뚫어보기 (=DB와 커넥션 만들기)
+    // public void makeConnection() {
+    //     DataSourceUtils.getConnection(dataSource);
+    // }
 
     // public String findProduct(int idx) {
     public Product findProduct(int idx) {
