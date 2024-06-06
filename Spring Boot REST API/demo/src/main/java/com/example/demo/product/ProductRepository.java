@@ -5,16 +5,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.sql.DataSource;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.datasource.DataSourceUtils;
+
+import jakarta.persistence.EntityManager;
 
 // @Repository
 public class ProductRepository {
 
+    @Autowired
+    EntityManager entityManager;
+    // import jakarta.persistence <- 영속성
+
     // @Autowired
-    // DataSource dataSource;
+    // DataSource dataSource; //jdbc에서 사용한 객체
+
     
     // Id(Int), Name(Str)
     // 1        NoteBook

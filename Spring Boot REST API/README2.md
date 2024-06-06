@@ -17,6 +17,10 @@
 - [Section 7 - JDBC API](#section-7---jdbc-api)
   - [build.gradle](#buildgradle)
 - [Section 8 - JPA](#section-8---jpa)
+  - [hibernate](#hibernate)
+- [Section 9 - 전체 조회](#section-9---전체-조회)
+
+---
 
 # [Section 1 - 시작](#목차)
 
@@ -353,4 +357,21 @@ Compile Dependencies (컴파일하는데 필요한 Dependencies 포함)
 Spring Data JPA Dependencies에 hibernate 포함  
 즉, 구현체가 hibernate를 사용하라고 default로 설정  
 
-그 외에 spring boot starter jdbc, spring data jpa도 포함
+그 외에 spring boot starter jdbc, spring data jpa도 포함  
+-> JDBC를 포함한다는 것은 build.gradle에서 JDBC를 생략해도 무방
+
+```java
+// ProductRepository
+    @Autowired
+    EntityManager entityManager;
+    // import jakarta.persistence <- 영속성
+```
+
+EntityManager는 DB의 CRUD 메소드 제공
+
+# [Section 9 - 전체 조회](#목차)
+
+DB에 테이블 만들기
+
+![alt text](img/image-24.png)
+

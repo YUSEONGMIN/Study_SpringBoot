@@ -1,14 +1,14 @@
 {
-  "folders": [
-	{
-		"path": ".."
-	},
-	{
-		"path": "demo"
+	"folders": [
+		{
+			"path": ".."
+		},
+		{
+			"path": "demo"
+		}
+	],
+	"settings": {
+		"java.compile.nullAnalysis.mode": "automatic",
+		"java.configuration.updateBuildConfiguration": "interactive"
 	}
-],
-  "settings": {
-    "java.compile.nullAnalysis.mode": "automatic",
-    "java.configuration.updateBuildConfiguration": "interactive"
-  }
 }
