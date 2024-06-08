@@ -478,3 +478,36 @@ TypedQuery <com.example.demo.product.Product>
 어떤 타입일지 몰라서
 ```
 
+이대로 빌드를 하면 다음과 같은 에러가 발생  
+
+```
+Caused by: org.hibernate.AnnotationException: 
+Entity 'com.example.demo.product.Product' has no identifier 
+(every '@Entity' class must declare or inherit at least one '@Id' or '@EmbeddedId' property)
+```
+
+DB에선 id가 식별자이지만 자바에선 식별자를 정의해줘야 함  
+`@Id` 사용
+
+### JPA 키워드 정리
+
+JPA: 자바 객체 -> "ORM" -> RDBMS 저장  
+- 자바의 영속성을 지켜주는 역할
+- 영속성: 자바 객체를 JVM 밖에서도 지속하는 것 (DB 저장)
+
+hibernate: JPA 구현체 (Spring 선택: default)
+- JPA는 인터페이스이고, 인터페이스 뒤에 있는 구현체들 중 하나
+- 편해서 default
+
+Entity: 자바 객체 1:1 DB **Mapping**  
+EntityManager: Mapping 관리, CRUD method  
+- 자바 객체를 Entity로 만들어줌
+
+EntityContext: Java - DB 사이 공간 Entity가 모여있는 곳  
+- EntityManager가 일하는 공간
+
+@Entity: JPA에게 Entity로 등록해줘 전달
+@Id: DB의 식별자를 지정
+
+# [Section 10 - 상품 등록](#목차)
+
