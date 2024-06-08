@@ -1,29 +1,37 @@
 package com.example.demo.product;
 
+import jakarta.persistence.Entity;
+
+@Entity // persistence.Entity
 public class Product {
     
+    private int id;
     private String name;
     private int price;
     private String description;
     
+    public int getId() {
+        return id;
+    }
+    public void setId(int id) {
+        this.id = id;
+    }
     public String getName() {
-        return name;
+        return name;    
     }
     public void setName(String name) {
-        this.name = name;
+        this.name = name;    
     }
     public int getPrice() {
-        return price;
+        return price;    
     }
     public void setPrice(int price) {
-        this.price = price;
+        this.price = price;    
     }
     public String getDescription() {
-        return description;
+        return description;    
     }
     public void setDescription(String description) {
-        this.description = description;
+        this.description = description;    
     }
-
-    
 }

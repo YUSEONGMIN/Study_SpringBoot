@@ -8,6 +8,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 
 // @Repository
 public class ProductRepository {
@@ -34,12 +35,14 @@ public class ProductRepository {
     //     DataSourceUtils.getConnection(dataSource);
     // }
 
+    // 개별 조회
     // public String findProduct(int idx) {
     public Product findProduct(int idx) {
         // return "NoteBook";
         return db.get(idx);
     }
 
+    // 상품 등록
     // public void save(String productName) {
     public void save(Product product) {
         // db.put(id++, "Notebook");
@@ -49,9 +52,15 @@ public class ProductRepository {
         System.out.println(product.getName());
     }
 
-    public List<Product> findProducts() {
-        return new ArrayList<>(db.values());
+    // 전체 조회
+    public List<Product> findProducts() {        
+        // return new ArrayList<>(db.values());
         // List 생성자를 이용. db는 Map 형태로 key(id), value(Product)로 되어 있음
         // Product 객체들이 모여 리스트가 됨
+
+        // Map으로 구현된 db가 아닌 진짜 db로 조회하기
+        TypedQuery<Product> query = entityManager.createQuery("SELECT p FROM Product p", Product.class);
+        List<Product> products = query.getResultList();
+        return products;
     }
 }
