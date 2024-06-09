@@ -21,6 +21,10 @@
 - [Section 8 - JPA](#section-8---jpa)
   - [hibernate](#hibernate)
 - [Section 9 - 전체 조회](#section-9---전체-조회)
+  - [@Entity](#entity)
+- [Section 10 - 상품 등록](#section-10---상품-등록)
+  - [트랜잭션](#트랜잭션)
+
 
 ---
 
@@ -376,6 +380,9 @@ EntityManager는 DB의 CRUD 메소드 제공
 
 # [Section 9 - 전체 조회](#목차)
 
+- [@Entity](#entity)
+
+
 DB에 테이블 만들기
 
 ![alt text](img/image-24.png)
@@ -511,3 +518,66 @@ EntityContext: Java - DB 사이 공간 Entity가 모여있는 곳
 
 # [Section 10 - 상품 등록](#목차)
 
+- [트랜잭션](#트랜잭션)
+
+EntityManager가 가진 CRUD 메소드
+
+- 테이블 조회 SELECT
+
+```java
+entityManager.createQuery("").getResultList(); // 전체 조회
+```
+
+entityManager에게 select를 하기위한 쿼리를 만들어줘 `createQuery`  
+쿼리를 만들고 실행하면 결과가 여러 개가 나오니까 List로 반환해줘 `getResultList`
+
+CRUD 메소드라고 하기엔 어설픔  
+CRUD를 해준게 아니고, 내가 직접 CRUD를 해달라고 요청한 것  
+-> entityManager는 전체 조회는 제공하지 않고, 개별 조회를 제공함
+
+개별 조회 `find(id)`
+
+- 객체 등록 INSERT
+
+```java
+persist(객체) // 저장
+```
+
+JPA가 자바 객체를 저장(영속성)
+
+- 수정 / 삭제
+
+---
+
+상품 등록을 하면 오류가 발생함 (트랜잭션 에러)
+
+```
+jakarta.persistence.TransactionRequiredException: No EntityManager with actual transaction available for current thread - cannot reliably process 'persist' call
+```
+
+## [트랜잭션](#section-10---상품-등록)
+
+데이터베이스 작업(CRUD) 단위
+
+회원가입: 입력값 가입 요청 -> 가입 -> 000님 환영합니다! (가입 정보 출력) 
+
+    Create -> Read 
+    INSERT -> SELECT 
+
+    사용자가 원하는 기능 덩어리 단위 = ‘Create ~ Read’ 트랜잭션 1개 
+    = 비즈니스 로직 
+
+    Repository 메소드 단위는 C,R,U,D 단위로 구성
+    Service 메소드 단위는 비즈니스 로직 단위로 구성 (즉, 여기에 트랜잭션을 표현) 
+
+---
+
+트랜잭션을 하는 이유  
+
+하나의 트랜잭션: insert + insert + ... + insert + insert   
+작업 중 에러 발생하면 다시 다 원상복구 = 모든 작업 다 롤백(Roll-Back) 
+
+모든 작업들이 성공해야 모두 DB 반영  
+-> 트랜잭션 단위로 DB에 반영/취소
+
+@Transaction
