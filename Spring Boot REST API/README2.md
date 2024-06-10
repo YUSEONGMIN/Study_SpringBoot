@@ -142,14 +142,15 @@ JDBC가 DB와 연결이 되면
 -> JPA가 거기에 ORM을 얹어주고  
 -> Spring Data JPA는 거기에 사용하기 편하게 만들어줌
 
-[spring.io - application.properties](https://docs.spring.io/spring-boot/appendix/application-properties/index.html)
+### [spring.io - application.properties](https://docs.spring.io/spring-boot/appendix/application-properties/index.html)
 
 ![alt text](img/image-22.png)
+
+굉장히 많은 DB에 연결될 때 사용하는 것들
 
 ```
 <프로젝트 속성>
 1) DB 연결 (JDBC를 사용하려면 'Datasource 객체' 속성 사용)
-- 굉장히 많은 DB에 연결될 때 사용하는 것들
 
 그 중 필요한 것들
 spring.datasource.driver-class-name
@@ -172,3 +173,7 @@ spring.datasource.url
 3) 프로젝트 이름 바꾸기
 4) 로그 파일 경로
 ```
+
+![alt text](img/image-23.png)
+
+DB 생성 후 주소 입력 `jdbc:mariadb://localhost:3306/shoppingmall`
