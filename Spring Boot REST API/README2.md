@@ -192,9 +192,6 @@ spring.datasource.url
 
 ![alt text](img/image-23.png)
 
-<<<<<<< HEAD
-DB 생성 후 주소 입력 `jdbc:mariadb://localhost:3306/shoppingmall`
-=======
 mariaDB와 연결? X  
 mariaDB 안에 shoppingmall과 연결 O
 
@@ -585,4 +582,3 @@ jakarta.persistence.TransactionRequiredException: No EntityManager with actual t
 -> 트랜잭션 단위로 DB에 반영/취소
 
 @Transaction
->>>>>>> b6d2063f51c30400688d2a94aa4434964f89e8dd
