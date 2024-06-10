@@ -17,6 +17,11 @@ public class ProductService {
     }
 // 생성자 주입 방법을 써도 필드가 필요하지 않은 것은 아님
 
+
+    // public void makeConnection() {
+    //     productRepository.makeConnection();
+    // }
+
     // public String findProduct(int id) {
     public Product findProduct(int id) {
         // return "<h1>NoteBook!!</h1>";

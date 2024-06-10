@@ -1,5 +1,10 @@
 # Udemy 강의
 
+- [옆집 개발자와 같이 진짜 이해하며 만들어보는 첫 Spring Boot 프로젝트 (김송아 강사)](README.md)
+- [옆집 개발자와 같이 진짜 이해하며 만들어보는 첫 Spring Boot 프로젝트 1.5탄 (김송아 강사)](README1.5.md)
+
+---
+
 - 옆집 개발자와 같이 진짜 이해하며 만들어보는 첫 Spring Boot 프로젝트 2탄 (김송아 강사)
 
 ## 목차
@@ -10,7 +15,18 @@
 - [Section 4 - ERD](#section-4---erd)
 - [Section 5 - JPA](#section-5---jpa)
 - [Section 6 - Spring Data JPA](#section-6---spring-data-jpa)
-  - [DB 연결하기](#db-연결하기)
+  - [DB 연결하기 - properties](#db-연결하기---properties)
+- [Section 7 - JDBC API](#section-7---jdbc-api)
+  - [build.gradle](#buildgradle)
+- [Section 8 - JPA](#section-8---jpa)
+  - [hibernate](#hibernate)
+- [Section 9 - 전체 조회](#section-9---전체-조회)
+  - [@Entity](#entity)
+- [Section 10 - 상품 등록](#section-10---상품-등록)
+  - [트랜잭션](#트랜잭션)
+
+
+---
 
 # [Section 1 - 시작](#목차)
 
@@ -95,7 +111,7 @@ Java DataBase Connectivity
 ### JPA란?
 
 Java Persistence API  
-자바 지속성/영속성 API
+자바 지속성/영속성 API (영원히 지속되는 성질)  
 자바(의 객체)가 JVM 밖에서도 지속되길 원함  
 -> 데이터베이스에 저장해둘 수 있을까
 
@@ -109,7 +125,7 @@ JPA != Spring Data JPA
 
 # [Section 6 - Spring Data JPA](#목차)
 
-- [DB 연결하기](#)
+- [DB 연결하기 - properties](#db-연결하기---properties)
 
 ![alt text](img/image-21.png)
 
@@ -121,7 +137,7 @@ DB와 연결되는 JDBC를 사용할 수 있게 하는 JPA
 그 JPA를 쉽게 사용할 수 있게 하는 것  
 -> Spring Data JPA
 
-## [DB 연결하기](#section-6---spring-data-jpa)
+## [DB 연결하기 - properties](#section-6---spring-data-jpa)
 
 1. DB에 Product를 저장할 공간, 테이블 준비하기
 2. 진짜 DB랑 연결하기
@@ -176,4 +192,397 @@ spring.datasource.url
 
 ![alt text](img/image-23.png)
 
+<<<<<<< HEAD
 DB 생성 후 주소 입력 `jdbc:mariadb://localhost:3306/shoppingmall`
+=======
+mariaDB와 연결? X  
+mariaDB 안에 shoppingmall과 연결 O
+
+application.properties에서  
+url, username, password 등 틀린 정보를 입력해도 에러가 발생하지 않는다.
+-> JDBC API
+
+# [Section 7 - JDBC API](#목차)
+
+- [build.gradle](#buildgradle)
+
+자바 프로젝트와 DB를 어떻게 연결하는가?  
+-> JDBC의 객체: datasource
+
+DataSource 객체의 역할
+
+- DB 속성값을 들고 자바와 DB 사이의 터널을 뚫어줌
+- SQL 구문으로 소통 가능하게 도와줌
+
+properties에 DB 속성 값을 적어주면 Spring이 DataSource 객체를 만들어줌
+
+에러가 안 나는 이유는 이 속성 값이 틀린지 스프링은 아직 모른다.  
+스프링은 이 객체를 사용할 때 알게 됨
+
+## [build.gradle](#section-7---jdbc-api)
+
+### DataSource 객체를 만드는 방법
+
+```java
+import javax.sql.DataSource;
+
+    @Autowired
+    DataSource dataSource;
+```
+
+dependencies: 의존성 = 사용할 것
+
+```
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+  runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+}
+```
+
+web을 만들 것이다. test를 할 것이다. 등
+
+> runtimeOnly: 프로그램 돌 때만 사용하겠다.  
+> implementation: 구현할 때 사용
+
+{} 안에 있는 것들(패키지)을 사용하는데 앞에 있는 글에 따라서 언제 사용하는지 결정
+
+build.gradle의 dependencies에 추가를 해줘야 스프링이 객체를 만들어줌
+
+MySQL을 사용한다면
+
+```
+	runtimeOnly 'mysql:mysql-connector-java' 에서
+	runtimeOnly 'com.mysql:mysql-connector-j' 으로 변경
+```
+
+### dataSource로 터널 뚫기
+
+```java
+// ProductRepository
+    public void makeConnection() {
+        DataSourceUtils.getConnection(dataSource);
+    }
+// ProductController
+    @GetMapping("/connectdb")
+    public void makeConnection() {
+        productService.makeConnection();
+    }
+```
+
+spring.datasource.url 주소가 틀리면 에러 발생
+
+`Caused by: java.net.ConnectException: Connection refused (Connection refused)`
+
+# [Section 8 - JPA](#목차)
+
+- [hibernate](#hibernate)
+
+DataSource는 이제 JPA를 통해서 관리하므로 주석처리
+
+build.gradle에 JPA 추가하기
+
+> [Maven Repository](https://mvnrepository.com/)  
+> Spring Boot Starter Data JPA  
+> Starter: 필요한 패키지 미리 준비
+
+```
+	implementation 'org.springframework.boot:spring-boot-starter-jdbc:3.3.0'
+```
+
+뒤에 버젼을 적지 않더라도 알아서 적용  
+빌드하면 로그에 hibernate라는 글자가 보임
+
+## [hibernate](#section-8---jpa)
+
+![alt text](img/image-21.png)
+
+자바와 DB끼리 통신하려면 JDBC API로 1단계 쉽게 접근  
+객체랑 데이터베이스의 데이터랑 매핑하는데 어려워 JPA로 2단계 쉽게 접근  
+사용하기엔 조금 어려워 Spring Data JPA로 3단계 쉽게 접근
+
+JDBC API, JPA(Java Persistence API), Spring Data JPA 모두 API  
+API: Application Programming Interface
+
+JDBC API는 DB랑 통신할 때 사용한 객체는 DataSource  
+DataSource 내부를 보면 인터페이스임
+
+```java
+20 implementations
+public interface DataSource extends CommonDataSource, Wrapper { ... }
+```
+
+인터페이스라는건 구현된 코드가 없다는 것..  
+그런데 이전에 getConnection 메소드를 사용했음  
+인터페이스로는 객체를 만들 수 없음..
+
+-> 자바의 인터페이스를 type 형태로만 사용하고, type에 담을 수 있는 진짜 구현체는 따로
+
+20 implementations을 열어보면 20개의 구현체들이 있음
+
+DataSource를 객체라고 했지만  
+DataSource 인터페이스를 implement해서 구현체는 따로 있음
+
+ex) 20개 중 하나인 HikariDataSource (com.zaxxer.hikari) 등...
+
+DataSource는 인터페이스고, 그 안의 구현체는 따로 있다.
+-> 인터페이스이기 때문에 type만 담아서 사용 (UpCasting)
+
+### JPA(API): hibernate
+
+JDBC보다도 ORM이 가능하게 지원해줌  
+JPA도 인터페이스로 진짜 구현체는 hibernate
+
+> Recall)  
+> Java Persistence API: 자바 영속성(영원히 지속되는 성질)  
+> 자바(객체)가 JVM 밖에서도(=프로그램이 종료되도) 저장되도록  
+> -> 데이터베이스에 저장
+
+JPA가 하는 일은 자바의 객체와 DB의 row를 매핑해서 DB에 저장
+
+매핑(Mapping)을 한다는 것은 자바의 객체를 DB에 그대로 저장하는 것이 아니라  
+DB는 DB대로 저장을 하되, 객체가 그대로 저장되는 것처럼 형태를 매핑하는 것
+
+JPA: 자바 객체 - Mapping "Entity" - DB 가로 줄(행)
+
+스프링이 스프링 빈을 관리하는 공간 = 컨테이너  
+JPA가 Entity를 관리하는 공간 = `EntityContext`
+
+JPA는 자바와 DB 사이에 EntityContext 공간을 만들고 엔티티를 관리한다.
+
+1. JPA가 관리하는 객체: Entity (DB와 1:1 매핑)
+2. Entity를 모아두는 공간: EntityContext (Mapping을 고려하는 공간)
+3. JDBC API - DataSource (interface) - hikari -> 터널을 연결하고, SQL 전달  
+    JPA API - EntityManager (interface) - hibernate  
+   hibernate -> Entity를 관리 (라이프 사이클, 영속성 관리), CRUD 작업 수행할 수 있는 메소드 제공
+
+### hibernate 위주로 쓰는 이유
+
+인터페이스는 구현체가 1개 이상(hibernate 등) 가능하다.
+
+Maven Repository에서 Spring Boot Starter Data JPA를 보면  
+Compile Dependencies (컴파일하는데 필요한 Dependencies 포함)
+
+- O/R Mapping, org.hibernate.orm > hibernate-core 등...
+
+Spring Data JPA Dependencies에 hibernate 포함  
+즉, 구현체가 hibernate를 사용하라고 default로 설정
+
+그 외에 spring boot starter jdbc, spring data jpa도 포함  
+-> JDBC를 포함한다는 것은 build.gradle에서 JDBC를 생략해도 무방
+
+```java
+// ProductRepository
+    @Autowired
+    EntityManager entityManager;
+    // import jakarta.persistence <- 영속성
+```
+
+EntityManager는 DB의 CRUD 메소드 제공
+
+# [Section 9 - 전체 조회](#목차)
+
+- [@Entity](#entity)
+
+
+DB에 테이블 만들기
+
+![alt text](img/image-24.png)
+
+name, price, description이 각각 중복되어 있음  
+서로 다른 상품임에도 구별하기가 어렵다.  
+그래서 id 값이 필요하다.
+
+```sql
+CREATE TABLE product (
+  id INT NOT NULL AUTO_INCREMENT,
+  name VARCHAR(100) NOT NULL,
+  price INT NOT NULL,
+  description VARCHAR(500),
+  PRIMARY KEY (id)
+);
+```
+
+DB에 테이블 생성하는 쿼리문  
+_id는 비어있지 않으며, 자동 증가로 PK 지정_
+
+sql 구문을 파일에 기록하는 것이 좋다.  
+그 동안 어떤 쿼리문을 썼는지, 오타가 있는지 확인하기 좋다.  
+최상단 경로에 `shoppingmall.sql` 파일 생성
+
+![alt text](img/image-25.png)
+
+DB 준비 끝
+
+---
+
+JPA: 자바 객체 <-> Mapping `Entity` in `EntityContext` <-> DB 가로줄(행)
+
+## [@Entity](#section-9---전체-조회)
+
+JPA가 Entity로 등록해서 관리하는 방법  
+
+> Reall)  
+> 스프링이 스프링 빈으로 등록해서 관리하는 방법  
+> @Component 또는 @Configuration + @Bean  
+> "어노테이션" 사용
+
+JPA가 Entity로 등록해서 관리하는 방법  
+`@Entity` 어노테이션 사용  
+
+```java
+@Entity
+public class Product {
+
+      private int id;
+```
+
+`@Entity`  
+Product 객체를 Entity로 등록
+
+DB에서 생성된 테이블 구조에 맞게 id 추가  
+
+> private는 다 getter, setter 해야한다?
+> setter의 경우, 꼭 그렇지는 않다.
+
+### EntityManager가 가진 메소드
+
+- 테이블 조회 SELECT
+- 객체 등록 INSERT
+
+```java
+    public List<Product> findProducts() {
+        return entityManager // 엔티티매니저에게
+                .createQuery("던지고 싶은 sql", 엔티티로 사용할 클래스) // 이 쿼리문을 만들어서
+                .getResultList(); // 결과를 가져와 줘
+    }
+```
+일반적인 sql 구문이 들어가지 않음 -> JPQL(Java Persistence Query Language)  
+JPA의 번거로움 -> Spring DATA JPA 으로 해결
+
+```
+SQL: SELECT * FROM product(테이블명)
+
+JPQL: SELECT p FROM Product(엔티티명) (AS) p
+- SQL을 자바의 시선으로 추상화시킨 명령어
+- 결국 DB에서는 SQL이 실행
+```
+
+JPQL: JPA에서 내가 원하는 쿼리를 만들어서 쓸 때 사용하는 명령어
+
+```java
+    public List<Product> findProducts() {
+        TypedQuery<Product> query = entityManager.createQuery("SELECT p FROM Product p", Product.class);
+        List<Product> products = query.getResultList();
+        return products;
+```
+
+entityManager의 createQuery 반환 타입은 String이 아닌 TypedQuery (타입이 정해진 쿼리)  
+쿼리를 만들어서 나온 결과는 두번째 매개변수 `Product.class` 형태로 나옴  
+이 형태가 값일지 리스트일지는 아직 모름. 그래서 제네릭 사용  
+
+```
+TypedQuery <com.example.demo.product.Product>
+<>는 제네릭(Generic)을 의미
+어떤 타입일지 몰라서
+```
+
+이대로 빌드를 하면 다음과 같은 에러가 발생  
+
+```
+Caused by: org.hibernate.AnnotationException: 
+Entity 'com.example.demo.product.Product' has no identifier 
+(every '@Entity' class must declare or inherit at least one '@Id' or '@EmbeddedId' property)
+```
+
+DB에선 id가 식별자이지만 자바에선 식별자를 정의해줘야 함  
+`@Id` 사용
+
+### JPA 키워드 정리
+
+JPA: 자바 객체 -> "ORM" -> RDBMS 저장  
+- 자바의 영속성을 지켜주는 역할
+- 영속성: 자바 객체를 JVM 밖에서도 지속하는 것 (DB 저장)
+
+hibernate: JPA 구현체 (Spring 선택: default)
+- JPA는 인터페이스이고, 인터페이스 뒤에 있는 구현체들 중 하나
+- 편해서 default
+
+Entity: 자바 객체 1:1 DB **Mapping**  
+EntityManager: Mapping 관리, CRUD method  
+- 자바 객체를 Entity로 만들어줌
+
+EntityContext: Java - DB 사이 공간 Entity가 모여있는 곳  
+- EntityManager가 일하는 공간
+
+@Entity: JPA에게 Entity로 등록해줘 전달
+@Id: DB의 식별자를 지정
+
+# [Section 10 - 상품 등록](#목차)
+
+- [트랜잭션](#트랜잭션)
+
+EntityManager가 가진 CRUD 메소드
+
+- 테이블 조회 SELECT
+
+```java
+entityManager.createQuery("").getResultList(); // 전체 조회
+```
+
+entityManager에게 select를 하기위한 쿼리를 만들어줘 `createQuery`  
+쿼리를 만들고 실행하면 결과가 여러 개가 나오니까 List로 반환해줘 `getResultList`
+
+CRUD 메소드라고 하기엔 어설픔  
+CRUD를 해준게 아니고, 내가 직접 CRUD를 해달라고 요청한 것  
+-> entityManager는 전체 조회는 제공하지 않고, 개별 조회를 제공함
+
+개별 조회 `find(id)`
+
+- 객체 등록 INSERT
+
+```java
+persist(객체) // 저장
+```
+
+JPA가 자바 객체를 저장(영속성)
+
+- 수정 / 삭제
+
+---
+
+상품 등록을 하면 오류가 발생함 (트랜잭션 에러)
+
+```
+jakarta.persistence.TransactionRequiredException: No EntityManager with actual transaction available for current thread - cannot reliably process 'persist' call
+```
+
+## [트랜잭션](#section-10---상품-등록)
+
+데이터베이스 작업(CRUD) 단위
+
+회원가입: 입력값 가입 요청 -> 가입 -> 000님 환영합니다! (가입 정보 출력) 
+
+    Create -> Read 
+    INSERT -> SELECT 
+
+    사용자가 원하는 기능 덩어리 단위 = ‘Create ~ Read’ 트랜잭션 1개 
+    = 비즈니스 로직 
+
+    Repository 메소드 단위는 C,R,U,D 단위로 구성
+    Service 메소드 단위는 비즈니스 로직 단위로 구성 (즉, 여기에 트랜잭션을 표현) 
+
+---
+
+트랜잭션을 하는 이유  
+
+하나의 트랜잭션: insert + insert + ... + insert + insert   
+작업 중 에러 발생하면 다시 다 원상복구 = 모든 작업 다 롤백(Roll-Back) 
+
+모든 작업들이 성공해야 모두 DB 반영  
+-> 트랜잭션 단위로 DB에 반영/취소
+
+@Transaction
+>>>>>>> b6d2063f51c30400688d2a94aa4434964f89e8dd
