@@ -745,19 +745,46 @@ public interface SpringDataJPAProductRepository extends JpaRepository<Product, I
 
 # [Section 12 - DTO](#목차)
 
- DTO가 누구일까 
-데이터 전송 객체 : 데이터를 전송하기 위해 사용하는 객체 
-= 엔티티 대신 ‘사본’처럼 일 할게 
-엔티티는.. ‘원본’ 
-1) Controller 까지 왔다갔다 하기에는.. 위-험 
-2) 년도로 입력 -> DB에 저장은 ‘나이’ 
-3) 화면 바뀌면 DB도 Entity가 
-cf. Entity : DB 1:1 객체 - DB에서 갓 나올 수도 있고, DB로 들어갈 수도 있고
+DTO(Data Transfer Object)  
+데이터 전송 객체: 데이터를 전송하기 위해 사용하는 객체 
+
+DTO를 알려면 엔티티에 대해 알아야 됨
+Entity는 DB 테이블에 들어있는 데이터와 1:1로 매핑되는 객체
+
+엔티티란?  
+- DB와 일대일로 매핑되는 객체
+- 영속성을 가짐
+- 엔티티 매니저가 관리
+- 엔티티 컨텍스트에 저장
+
+### DTO를 쓰는 이유
+
+DB에 들어있는 데이터는 검증되어야 들어감(무결성)  
+엔티티는 DB에서 나올 수도, 들어갈 수도 있음  
+`Product` 엔티티를 DB에 들어가기 전 변경한다면.. 위험(무결성 위배)  
+
+엔티티를 Controller까지 왔다갔다 하기에는 위험하다.  
+Controller는 프론트엔드와 너무 가까움  
+엔티티는 DB에 들어가야 되는 객체임  
+
+- 년도로 입력받고 DB에는 나이로 저장  
+
+- 화면에서 입력받는 값이 바뀌면 DB와 엔티티 모두 바뀜
+
+---
+
+엔티티(원본) 대신 사본처럼 일하는 객체 = DTO
 
 
 ### 다음 목표
 
-JPA : 수정, 삭제 - DTO <-> Entity : 복사(변환) - build.gradle dependencies 키워드, 메이븐 레포지토리 - gradle, maven 차이 - @SpringBootApplication - AOP - Security 
-…  
-자바 
-+ 웹 서비스 : 유효성 검사, 예외 처리 
+- JPA로 수정, 삭제하기  
+- DTO <-> Entity: 복사(변환)
+  - DTO 만들기, DTO 이용하다가 DB 들어가기 전 Entity 변환
+- build.gradle dependencies 키워드 의미 파악, 메이븐 레포지토리란? 
+- gradle, maven 차이, 장단점
+- @SpringBootApplication 
+- AOP 
+- Security 
+
+웹 서비스: 유효성 검사, 예외 처리 
