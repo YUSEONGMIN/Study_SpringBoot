@@ -24,7 +24,8 @@
   - [@Entity](#entity)
 - [Section 10 - 상품 등록](#section-10---상품-등록)
   - [트랜잭션](#트랜잭션)
-
+- [Section 11 - Spring Data JPA](#section-11---spring-data-jpa)
+- [Section 12 - DTO](#section-12---dto)
 
 ---
 
@@ -392,6 +393,11 @@ name, price, description이 각각 중복되어 있음
 서로 다른 상품임에도 구별하기가 어렵다.  
 그래서 id 값이 필요하다.
 
+```sh
+mysql -u root -p
+> root1234
+```
+
 ```sql
 CREATE TABLE product (
   id INT NOT NULL AUTO_INCREMENT,
@@ -581,4 +587,177 @@ jakarta.persistence.TransactionRequiredException: No EntityManager with actual t
 모든 작업들이 성공해야 모두 DB 반영  
 -> 트랜잭션 단위로 DB에 반영/취소
 
-@Transaction
+@Transaction 사용
+
+`127.0.0.1:8080/products` POST 방식으로 데이터 저장 후
+
+```
+{
+    "name":"note",
+    "price":4000,
+    "description":"line"
+}
+```
+
+GET으로 조회하기
+
+### JPA의 SQL 구문 확인하기
+
+application.properties
+
+`spring.jpa.show-sql=true` 추가
+
+save를 하면 다음과 같은 sql 구문 출력
+
+```
+Hibernate: insert into product (description,name,price,id) values (?,?,?,?)
+```
+
+get으로 조회할 시
+
+```
+Hibernate: select p1_0.id,p1_0.description,p1_0.name,p1_0.price from product p1_0
+```
+
+# [Section 11 - Spring Data JPA](#목차)
+
+![alt text](img/image-26.png)
+
+Spring Data JPA: Spring이 제공해주는 JPA 인터페이스
+
+JPA: EntityManager, createQuery 등 복잡함을 추상화(간단하게)  
+-> 제공하는 메서드를 간결하고 다양하게
+
+- 페이징 기능
+  - DB 페이징 (1페이지: 1~10, 2페이지: 11~20 …)
+
+- 쿼리 메서드: 이 테이블에서 A 컬럼 값으로 조회
+
+### JpaRepository
+
+ApplicationConfiguration 에서 스프링 빈으로 등록된 기존 ProductRepository 대신 사용하기
+
+```java
+public interface SpringDataJPAProductRepository extends JpaRepository<엔티티명, 아이디> {
+}
+```
+
+제네릭 형태<>로 테이블 매핑해서 사용  
+엔티티명(엔티티로 사용할 클래스명), 아이디(Product 클래스의 id)  
+제네릭은 Type으로 작성
+
+SpringDataJPA는 자동으로 스프링 빈으로 등록해 줌  
+Service에서 바로 사용
+
+JpaRepository에는 `findAll`, `findAllById` 등 다양한 메소드들이 존재  
+
+- 테이블 전체 조회: findAll()
+- 데이터 개별 등록: save(엔티티 객체) (CrudRepository에 존재)
+- 데이터 개별 조회: findById()
+
+
+```java
+Optional<T> findById(ID id);
+
+// Optional은 클래스
+public final class Optional<T> {
+
+}
+```
+
+JPA는 DB에서 데이터를 가져오는 역할  
+-> 없는 값은 가져올 수 없음 (null.getName() X)
+
+Optional은 없을 수도 있는 값(null)을 확인
+
+```java
+// Service
+    @Autowired
+    private SpringDataJPAProductRepository springDataJPAProductRepository;
+
+    public Product findProduct(int id) {
+        return springDataJPAProductRepository.findById(id).get();
+    }
+```
+
+ProductRepository -> SpringDataJPAProductRepository로 레파지토리를 바꾸니  
+서비스 메소드 또한 findProduct -> findById 등으로 바뀌고, 변수 또한 바뀜
+
+레파지토리 하나를 바꾸니 서비스의 코드가 다 바뀜 (문제점)
+
+![alt text](img/image-27.png)
+
+Interface를 통해 해결 가능
+
+---
+
+어떤 레파지토리를 사용할 것인지  
+
+```java
+@Repository
+ProductRepository
+```
+
+```java
+// @Repository
+ProductSpringDataJPARepository
+```
+SpringDataJPA는 스프링빈 자동 등록
+
+등록된 레파지토리가 2개이면 에러 발생  
+ProductRepository를 사용하려면?
+
+id 말고 name, price 등으로 찾으려면...  
+- `findByName(String name)`
+- `findByPrice(int price)`
+
+SpringDataJPA  
+findBy... 라고 인터페이스 정의를 하면 알아서 JPQL을 만들어 줌
+
+JPA 기능: 메소드 이름을 분석해서 쿼리를 만들어줌 (네임드 쿼리)
+
+https://docs.spring.io/spring-data/jpa/reference/jpa/query-methods.html
+
+```
+JPA Query Methods
+This section describes the various ways to create a query with Spring Data JPA.
+
+Query Lookup Strategies
+The JPA module supports defining a query manually as a String or having it being derived from the method name.
+```
+
+JPA 모듈은 메소드 이름에 따라서 쿼리를 작성해 준다.
+
+```java
+public interface UserRepository extends Repository<User, Long> {
+
+  List<User> findByEmailAddressAndLastname(String emailAddress, String lastname);
+}
+```
+
+Name을 가지고 상품 리스트를 조회하고 싶다면
+
+```java
+public interface SpringDataJPAProductRepository extends JpaRepository<Product, Integer> {
+    List<Product> findByName(String name);
+}
+```
+
+# [Section 12 - DTO](#목차)
+
+ DTO가 누구일까 
+데이터 전송 객체 : 데이터를 전송하기 위해 사용하는 객체 
+= 엔티티 대신 ‘사본’처럼 일 할게 
+엔티티는.. ‘원본’ 
+1) Controller 까지 왔다갔다 하기에는.. 위-험 
+2) 년도로 입력 -> DB에 저장은 ‘나이’ 
+3) 화면 바뀌면 DB도 Entity가 
+cf. Entity : DB 1:1 객체 - DB에서 갓 나올 수도 있고, DB로 들어갈 수도 있고
+
+
+### 다음 목표
+
+JPA : 수정, 삭제 - DTO <-> Entity : 복사(변환) - build.gradle dependencies 키워드, 메이븐 레포지토리 - gradle, maven 차이 - @SpringBootApplication - AOP - Security 
+…  
+자바 
++ 웹 서비스 : 유효성 검사, 예외 처리 
